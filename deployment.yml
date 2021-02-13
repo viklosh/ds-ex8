@@ -13,6 +13,9 @@
       state: latest
       update_cache: yes
       state: present
+  - name: Ensure pip docker-py is present
+    pip:
+      name: docker-py
 
   - name: Create build directory
     file:
@@ -32,8 +35,6 @@
 
   - name: Build an image and push it to docker hub.
     docker_image:
-      build:
-        path: ~/app
+      path: ~/app
       name: viklosh/boxfuse:latest
       push: yes
-      source: build
