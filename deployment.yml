@@ -1,9 +1,19 @@
 ---
 - name: Build and push docker image...
   hosts: img-builder
-  #vars:
-    #githubuser: viklosh
-    #githubthoken
+  vars:
+    dockerhubuser: viklosh
+    dockerhubtoken: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          32336638386631306461386134393535616261356165656264646539383539303530333939383831
+          6666393361313532393532303665643264376439643364300a343761333535653939653239326565
+          30373030663932653235316538353632363536376138623735656163323135613330306164616639
+          6164343835326531660a333363356166323734626331383362353939333662333236343366333135
+          65383033666361343336666564333337336236333163363163356163353363653435343135383964
+          3430326166396264313833393534366331643837383866653363
+    dockerhubemail: xcodemail@mail.ru
+    imagename: viklosh/boxfuse:latest
+
   become: yes
 
   tasks:
@@ -38,14 +48,14 @@
 
   - name: Log into DockerHub
     docker_login:
-      username: viklosh
-      password: d9706f29-195b-49f7-aa30-6776ff74bd7a
-      email: xcodemail@mail.ru
+      username: '{{ dockerhubuser }}'
+      password: '{{ dockerhubtoken }}'
+      email: '{{ dockerhubemail }}'
 
   - name: Build an image and push it to docker hub.
     docker_image:
       path: ~/app
-      name: viklosh/boxfuse:latest
+      name: '{{ imagename }}'
       push: yes
 
 - name: Deploy boxfuse application...
@@ -67,14 +77,14 @@
 
   - name: Log into DockerHub
     docker_login:
-      username: viklosh
-      password: d9706f29-195b-49f7-aa30-6776ff74bd7a
-      email: xcodemail@mail.ru
+      username: '{{ dockerhubuser }}'
+      password: '{{ dockerhubtoken }}'
+      email: '{{ dockerhubemail }}'
   
   - name: Ensure boxfuse container is started...
     docker_container:
       name: boxfuse
-      image: viklosh/boxfuse:latest
+      image: '{{ imagename }}'
       state: started
       restart_policy: unless-stopped
       ports:
