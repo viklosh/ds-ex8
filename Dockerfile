@@ -1,8 +1,12 @@
 FROM maven:3.6.3-jdk-8-slim as maven_builder
 
-COPY ./boxfuse-sample-java-war-hello /app
+#COPY ./boxfuse-sample-java-war-hello /app
 
-WORKDIR /app
+WORKDIR /app 
+
+RUN git clone https://github.com/boxfuse/boxfuse-sample-java-war-hello.git
+
+WORKDIR /app/boxfuse-sample-java-war-hello
 
 RUN ["mvn", "package"]
 
@@ -10,4 +14,4 @@ RUN ["mvn", "package"]
 
 FROM tomcat:10.0.2-jdk8-corretto
 
-COPY --from=maven_builder /app/target/hello-1.0.war /usr/local/tomcat/webapps
+COPY --from=maven_builder /app/boxfuse-sample-java-war-hello/target/hello-1.0.war /usr/local/tomcat/webapps
