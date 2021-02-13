@@ -13,7 +13,6 @@
       name:
       - docker.io
       - python-pip
-      state: latest
       update_cache: yes
       state: present
 
@@ -59,7 +58,6 @@
       name:
       - docker.io
       - python-pip
-      state: latest
       update_cache: yes
       state: present
 
@@ -79,6 +77,5 @@
       image: viklosh/boxfuse:latest
       state: started
       restart_policy: unless-stopped
-      auto_remove: yes
       ports:
       - "8080:8080"
