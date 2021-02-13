@@ -1,0 +1,39 @@
+---
+- name: Build and push docker image...
+  hosts: img-builder
+  become: yes
+
+  tasks:
+  - name: Update apt cach...
+    apt:
+    
+  - name: Ensure docker package is present.
+    apt:
+      name: docker.io
+      state: latest
+      update_cache: yes
+      state: present
+
+  - name: Create build directory
+    file:
+      path: ~/app
+      state: directory
+      owner: root
+      group: root
+      mode: '0755'
+
+  - name: Copy Dockerfile
+    copy:
+      src: ./Dockerfile
+      dest: ~/app
+      owner: root
+      group: root
+      mode: '0644'
+
+  - name: Build an image and push it to docker hub.
+    docker_image:
+      build:
+        path: ~/app
+      name: viklosh/boxfuse:latest
+      push: yes
+      source: build
