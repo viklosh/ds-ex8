@@ -1,13 +1,14 @@
 ---
 - name: Build and push docker image...
   hosts: img-builder
+  #vars:
+    #githubuser: viklosh
+    #githubthoken
   become: yes
 
   tasks:
-  - name: Update apt cach...
-    apt:
     
-  - name: Ensure docker package is present.
+  - name: Ensure docker and python pip package is present.
     apt:
       name:
       - docker.io
@@ -15,6 +16,7 @@
       state: latest
       update_cache: yes
       state: present
+
   - name: Ensure pip docker-py is present
     pip:
       name: docker-py
@@ -46,3 +48,37 @@
       path: ~/app
       name: viklosh/boxfuse:latest
       push: yes
+
+- name: Deploy boxfuse application...
+  hosts: web
+  become: yes
+
+  tasks:
+  - name: Ensure docker, python-pip package is present.
+    apt:
+      name:
+      - docker.io
+      - python-pip
+      state: latest
+      update_cache: yes
+      state: present
+
+  - name: Ensure pip docker-py is present
+    pip:
+      name: docker-py
+
+  - name: Log into DockerHub
+    docker_login:
+      username: viklosh
+      password: d9706f29-195b-49f7-aa30-6776ff74bd7a
+      email: xcodemail@mail.ru
+  
+  - name: Ensure boxfuse container is started...
+    docker_container:
+      name: boxfuse
+      image: viklosh/boxfuse:latest
+      state: started
+      restart_policy: unless-stopped
+      auto_remove: yes
+      ports:
+      - "8080:8080"
